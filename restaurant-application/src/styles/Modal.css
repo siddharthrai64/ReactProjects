@@ -1,0 +1,26 @@
+.menuItem .modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menuItem .modal-container .modal-items {
+    background: white;
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100vh;
+    width: 25%;
+    margin: auto;
+    padding: 2%;
+    border: 2px solid #000;
+    border-radius: 0;
+    box-shadow: 2px 2px 4px black;
+    transition: all 2000ms ease-in-out;;
+}
