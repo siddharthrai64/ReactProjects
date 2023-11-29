@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toggleMenu } from "../utils/appSlice";
 import { YOUTUBE_SEARCH_API } from "../utils/constant";
+import { cacheResults } from "../utils/searchSlice";
 
 const Head = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
+
+    const dispatch = useDispatch();
+
+    //Reading Cache
+
+    const searchCache = useSelector((store) => store.search);
+
+    /**
+     * searchCache = {
+     *      "iphone": ["iphone 11", "iphone 14"] <- Search cache
+     * }
+     * 
+     * if searchQuery = iphone ,then it will look in the searchCache and then sets the search Suggestion directly without Api call
+     */
+    
     // const [suggestions, setSuggestions] = useState([]);
 
     // This is debouncing 
@@ -14,7 +30,12 @@ const Head = () => {
         //make an api call after every keypress 
         // if difference between 2 api call is less than 200ms decline the api
         const timer = setTimeout(() => {
-            getSearchSuggestions();
+            if (searchCache[searchQuery]) {
+                setSuggestions(searchCache[searchQuery])
+            } else {
+                getSearchSuggestions();
+            }
+            
         }, 200);
 
         return () => {
@@ -41,11 +62,15 @@ const Head = () => {
     const getSearchSuggestions = async () => {
         const data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
         const json = await data.json();
-        // console.log(json[1]);
+        console.log('API calls- ' + searchQuery);
         setSuggestions(json[1]);
+        // Updatinng the result in cache
+        dispatch(cacheResults({
+            [searchQuery] : json[1]
+        }))
     }
 
-    const dispatch = useDispatch();
+    
 
     const toggleMenuHandler = () => {
         dispatch(toggleMenu());
